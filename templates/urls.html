@@ -14,6 +14,10 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
+<!-- Campo de búsqueda -->
+<div class="card card-body mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Buscar URL..." onkeyup="filtrarTabla()">
+</div>
 
 <!-- Add URL Form -->
 <div class="card card-body">
@@ -75,5 +79,17 @@
         <a href="{{ url_for('Urls', page=page+1) }}" class="btn btn-primary">Adelante</a>
     {% endif %}
 </div>
+<script>
+function filtrarTabla() {
+    const input = document.getElementById("searchInput");
+    const filtro = input.value.toLowerCase();
+    const filas = document.querySelectorAll("tbody tr");
+
+    filas.forEach(fila => {
+        const texto = fila.innerText.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? "" : "none";
+    });
+}
+</script>
 
 {% endblock %}
