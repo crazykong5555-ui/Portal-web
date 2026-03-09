@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: webapp-portal
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn App:app"

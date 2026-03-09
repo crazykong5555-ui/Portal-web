@@ -14,9 +14,16 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
+
 <!-- Campo de búsqueda -->
 <div class="card card-body mb-3">
-    <input type="text" id="searchInput" class="form-control" placeholder="Buscar URL..." onkeyup="filtrarTabla()">
+    <div class="input-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar texto...">
+        <div class="input-group-append">
+            <button class="btn btn-primary" onclick="buscar()">Buscar</button>
+            <button class="btn btn-secondary ml-2" onclick="limpiarBusqueda()">Limpiar</button>
+        </div>
+    </div>
 </div>
 
 <!-- Add URL Form -->
@@ -47,9 +54,19 @@
             <tbody>
                 {% for url in urls %}
                 <tr>
-                    <td><img src="https://www.google.com/s2/favicons?domain={{ url[1] }}" alt="Favicon"></td>
-                    <td>{{ url[1].split("://")[1].split("/")[0] }}</td>
-                    <td style="text-align: left;"><a href="{{ url[1] }}">{{ url[1] }}</a></td>
+                    {% set link = url[1] if url|length > 1 else '' %}
+                    {% if link and link.startswith('http') %}
+                        <td>
+                            <img src="https://www.google.com/s2/favicons?domain={{ link.split('://')[1].split('/')[0] }}" alt="Favicon">
+                        </td>
+                        <td>{{ link.split('://')[1].split('/')[0] }}</td>
+                        <td style="text-align: left;"><a href="{{ link }}">{{ link }}</a></td>
+                    {% else %}
+                        <td></td>
+                        <td>Inválido</td>
+                        <td></td>
+                    {% endif %}
+
                     <td>
                         <a href="/edit_url/{{ url[0] }}" class="btn btn-secondary btn-sm">Edit URL</a>
                         <a href="/delete_url/{{ url[0] }}" class="btn btn-danger btn-delete">Delete URL</a>
@@ -79,16 +96,22 @@
         <a href="{{ url_for('Urls', page=page+1) }}" class="btn btn-primary">Adelante</a>
     {% endif %}
 </div>
+
 <script>
-function filtrarTabla() {
-    const input = document.getElementById("searchInput");
-    const filtro = input.value.toLowerCase();
+function buscar() {
+    const input = document.getElementById("searchInput").value.toLowerCase().trim();
     const filas = document.querySelectorAll("tbody tr");
 
     filas.forEach(fila => {
-        const texto = fila.innerText.toLowerCase();
-        fila.style.display = texto.includes(filtro) ? "" : "none";
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(input) ? "" : "none";
     });
+});
+}
+function limpiarBusqueda() {
+    document.getElementById("searchInput").value = "";
+    const filas = document.querySelectorAll("tbody tr");
+    filas.forEach(fila => fila.style.display = "");
 }
 </script>
 

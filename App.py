@@ -77,14 +77,31 @@ def delete_contact(id):
 def Urls():
     page = request.args.get('page', 1, type=int)
     per_page = 4
+
     cur = mysql.connection.cursor()
+
+    # LIMPIEZA AUTOMÁTICA DE BASURA Y VACÍOS
+    cur.execute("""
+        DELETE FROM urls
+        WHERE url IS NULL
+           OR url = ''
+           OR url REGEXP '^[ -]*$'
+           OR url NOT REGEXP '^(http|https)://';
+    """)
+    mysql.connection.commit()
+
+    # Cálculo de paginación
     cur.execute('SELECT COUNT(*) FROM urls')
     total_records = cur.fetchone()[0]
     total_pages = ceil(total_records / per_page)
     offset = (page - 1) * per_page
+
+    # Obtener datos limpios
     cur.execute('SELECT * FROM urls LIMIT %s OFFSET %s', (per_page, offset))
     data = cur.fetchall()
+
     return render_template('urls.html', urls=data, page=page, total_pages=total_pages)
+
 
 @app.route('/add_url', methods=['POST'])
 def add_url():
