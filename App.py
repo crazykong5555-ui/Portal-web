@@ -4,10 +4,12 @@ from math import ceil
 
 app = Flask(__name__)
 # Conexión a MySQL
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_HOST'] = 'containers-us-west-123.railway.app'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'BaseDeDatos555'
-app.config['MYSQL_DB'] = 'flaskcontacts'
+app.config['MYSQL_DB'] = 'railway'
+app.config['MYSQL_PORT'] = 6543
+
 mysql = MySQL(app)
 
 app.secret_key = 'mysecretkey'
