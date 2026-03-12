@@ -28,36 +28,32 @@ mysql = MySQL(app)
 # =========================
 # CREAR TABLAS AUTOMÁTICAMENTE
 # =========================
-
-@app.before_first_request
 def create_tables():
-
     cur = mysql.connection.cursor()
-
     cur.execute("""
     CREATE TABLE IF NOT EXISTS contacts1(
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        fullname VARCHAR(100),
-        phone VARCHAR(20),
-        email VARCHAR(100),
-        url TEXT
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fullname VARCHAR(100),
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    url TEXT
     )
     """)
-
     cur.execute("""
     CREATE TABLE IF NOT EXISTS urls(
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        url TEXT
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    url TEXT
     )
     """)
-
     mysql.connection.commit()
 
+# Ejecutar al iniciar la app
+with app.app_context():
+    create_tables()
 
 # =========================
 # HOME
 # =========================
-
 @app.route('/')
 def Index():
     return render_template('index.html')
