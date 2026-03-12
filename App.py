@@ -12,24 +12,18 @@ app.secret_key = "mysecretkey"
 # =========================
 
 mysql_url = os.environ.get("MYSQL_URL")
+if not mysql_url:
+    raise ValueError("MYSQL_URL environment variable is required")
 
-if mysql_url:
-    url = urllib.parse.urlparse(mysql_url)
-
-    app.config['MYSQL_HOST'] = url.hostname
-    app.config['MYSQL_USER'] = url.username
-    app.config['MYSQL_PASSWORD'] = url.password
-    app.config['MYSQL_DB'] = url.path[1:]
-    app.config['MYSQL_PORT'] = url.port
-
-else:
-    # conexión local
-    app.config['MYSQL_HOST'] = 'localhost'
-    app.config['MYSQL_USER'] = 'root'
-    app.config['MYSQL_PASSWORD'] = ''
-    app.config['MYSQL_DB'] = 'flaskcontacts'
+url = urllib.parse.urlparse(mysql_url)
+app.config['MYSQL_HOST'] = url.hostname
+app.config['MYSQL_USER'] = url.username
+app.config['MYSQL_PASSWORD'] = url.password
+app.config['MYSQL_DB'] = url.path[1:]
+app.config['MYSQL_PORT'] = url.port
 
 mysql = MySQL(app)
+
 
 # =========================
 # CREAR TABLAS AUTOMÁTICAMENTE
