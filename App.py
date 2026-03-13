@@ -4,23 +4,32 @@ from math import ceil
 import os
 import urllib.parse
 
+
 app = Flask(__name__)
-app.secret_key = "mysecretkey"
 
 # =========================
-# CONEXIÓN MYSQL
+# CONFIGURACIÓN MYSQL
 # =========================
 
 mysql_url = os.environ.get("MYSQL_URL")
-if not mysql_url:
-    raise ValueError("MYSQL_URL environment variable is required")
 
-url = urllib.parse.urlparse(mysql_url)
-app.config['MYSQL_HOST'] = url.hostname
-app.config['MYSQL_USER'] = url.username
-app.config['MYSQL_PASSWORD'] = url.password
-app.config['MYSQL_DB'] = url.path[1:]
-app.config['MYSQL_PORT'] = url.port
+if mysql_url:
+    # usar URL completa
+    url = urllib.parse.urlparse(mysql_url)
+
+    app.config['MYSQL_HOST'] = url.hostname
+    app.config['MYSQL_USER'] = url.username
+    app.config['MYSQL_PASSWORD'] = url.password
+    app.config['MYSQL_DB'] = url.path[1:]
+    app.config['MYSQL_PORT'] = url.port or 3306
+
+else:
+    # usar variables individuales
+    app.config['MYSQL_HOST'] = os.environ.get("MYSQLHOST")
+    app.config['MYSQL_USER'] = os.environ.get("MYSQLUSER")
+    app.config['MYSQL_PASSWORD'] = os.environ.get("MYSQLPASSWORD")
+    app.config['MYSQL_DB'] = os.environ.get("MYSQLDATABASE")
+    app.config['MYSQL_PORT'] = int(os.environ.get("MYSQLPORT", 3306))
 
 mysql = MySQL(app)
 
