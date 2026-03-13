@@ -11,25 +11,33 @@ app = Flask(__name__)
 # CONFIGURACIÓN MYSQL
 # =========================
 
-mysql_url = os.environ.get("MYSQL_URL")
+import os
+import urllib.parse
+from flask_mysqldb import MySQL
+
+# =========================
+# CONEXIÓN MYSQL
+# =========================
+
+mysql_url = os.getenv("MYSQL_URL")
 
 if mysql_url:
-    # usar URL completa
+
     url = urllib.parse.urlparse(mysql_url)
 
     app.config['MYSQL_HOST'] = url.hostname
     app.config['MYSQL_USER'] = url.username
     app.config['MYSQL_PASSWORD'] = url.password
-    app.config['MYSQL_DB'] = url.path[1:]
+    app.config['MYSQL_DB'] = url.path.replace("/", "")
     app.config['MYSQL_PORT'] = url.port or 3306
 
 else:
-    # usar variables individuales
-    app.config['MYSQL_HOST'] = os.environ.get("MYSQLHOST")
-    app.config['MYSQL_USER'] = os.environ.get("MYSQLUSER")
-    app.config['MYSQL_PASSWORD'] = os.environ.get("MYSQLPASSWORD")
-    app.config['MYSQL_DB'] = os.environ.get("MYSQLDATABASE")
-    app.config['MYSQL_PORT'] = int(os.environ.get("MYSQLPORT", 3306))
+    # fallback para desarrollo local
+    app.config['MYSQL_HOST'] = "localhost"
+    app.config['MYSQL_USER'] = "root"
+    app.config['MYSQL_PASSWORD'] = ""
+    app.config['MYSQL_DB'] = "flaskcontacts"
+    app.config['MYSQL_PORT'] = 3306
 
 mysql = MySQL(app)
 
