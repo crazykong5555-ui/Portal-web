@@ -21,6 +21,8 @@ from flask_mysqldb import MySQL
 
 mysql_url = os.getenv("MYSQL_URL")
 
+print("MYSQL_URL:", os.environ.get("MYSQL_URL"))
+
 if mysql_url:
 
     url = urllib.parse.urlparse(mysql_url)
