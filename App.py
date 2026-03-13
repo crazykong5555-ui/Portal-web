@@ -4,27 +4,19 @@ from math import ceil
 import os
 import urllib.parse
 
-
 app = Flask(__name__)
+app.secret_key = "mysecretkey"
 
 # =========================
 # CONFIGURACIÓN MYSQL
 # =========================
 
-import os
-import urllib.parse
-from flask_mysqldb import MySQL
-
-# =========================
-# CONEXIÓN MYSQL
-# =========================
-
 mysql_url = os.getenv("MYSQL_URL")
 
-print("MYSQL_URL:", os.environ.get("MYSQL_URL"))
+print("MYSQL_URL:", mysql_url)
 
-if mysql_url:
-
+if mysql_url and mysql_url.startswith("mysql://"):
+    # conexión usando MYSQL_URL (Railway)
     url = urllib.parse.urlparse(mysql_url)
 
     app.config['MYSQL_HOST'] = url.hostname
@@ -34,49 +26,59 @@ if mysql_url:
     app.config['MYSQL_PORT'] = url.port or 3306
 
 else:
-    # fallback para desarrollo local
-    app.config['MYSQL_HOST'] = "localhost"
-    app.config['MYSQL_USER'] = "root"
-    app.config['MYSQL_PASSWORD'] = ""
-    app.config['MYSQL_DB'] = "flaskcontacts"
-    app.config['MYSQL_PORT'] = 3306
+    # fallback local (XAMPP / Laragon)
+    app.config['MYSQL_HOST'] = os.getenv("MYSQLHOST", "localhost")
+    app.config['MYSQL_USER'] = os.getenv("MYSQLUSER", "root")
+    app.config['MYSQL_PASSWORD'] = os.getenv("MYSQLPASSWORD", "")
+    app.config['MYSQL_DB'] = os.getenv("MYSQLDATABASE", "flaskcontacts")
+    app.config['MYSQL_PORT'] = int(os.getenv("MYSQLPORT", 3306))
 
 mysql = MySQL(app)
-
 
 # =========================
 # CREAR TABLAS AUTOMÁTICAMENTE
 # =========================
-def create_tables():
-    cur = mysql.connection.cursor()
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS contacts1(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    fullname VARCHAR(100),
-    phone VARCHAR(20),
-    email VARCHAR(100),
-    url TEXT
-    )
-    """)
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS urls(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    url TEXT
-    )
-    """)
-    mysql.connection.commit()
 
-# Ejecutar al iniciar la app
+def create_tables():
+    try:
+        cur = mysql.connection.cursor()
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS contacts1(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        fullname VARCHAR(100),
+        phone VARCHAR(20),
+        email VARCHAR(100),
+        url TEXT
+        )
+        """)
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS urls(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        url TEXT
+        )
+        """)
+
+        mysql.connection.commit()
+        cur.close()
+
+        print("Tablas verificadas/creadas")
+
+    except Exception as e:
+        print("Error creando tablas:", e)
+
+# ejecutar al iniciar
 with app.app_context():
     create_tables()
 
 # =========================
 # HOME
 # =========================
+
 @app.route('/')
 def Index():
     return render_template('index.html')
-
 
 # =========================
 # CONTACTOS
@@ -164,7 +166,6 @@ def delete_contact(id):
 
     return redirect(url_for('Contacts'))
 
-
 # =========================
 # URLS
 # =========================
@@ -177,7 +178,7 @@ def Urls():
 
     cur = mysql.connection.cursor()
 
-    # limpiar basura
+    # limpiar urls inválidas
     cur.execute("""
         DELETE FROM urls
         WHERE url IS NULL
@@ -188,7 +189,6 @@ def Urls():
 
     mysql.connection.commit()
 
-    # total
     cur.execute("SELECT COUNT(*) FROM urls")
     total = cur.fetchone()[0]
 
@@ -265,10 +265,10 @@ def delete_url(id):
 
     return redirect(url_for('Urls'))
 
-
 # =========================
 # RUN
 # =========================
 
 if __name__ == "__main__":
     app.run(debug=True)
+
