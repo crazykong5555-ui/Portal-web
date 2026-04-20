@@ -4,47 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PORTAL</title>
-    <link rel="icon" type="image/png" href="images/favicon.ico">
+    <link rel="icon" href="{{ url_for('static', filename='images/crown.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/crown.ico') }}">
+
     <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/index.css">
+
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
         body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            min-height: 100vh; /* corregido */
         }
+
         main {
             flex: 1;
         }
-        .centered-image {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-            height: auto;
+
+        section {
+            text-align: center;
+            padding: 2rem 1rem;
         }
+
         .parrafo-blanco {
             color: white;
             text-align: center;
+            padding: 0 1rem;
         }
-        section {
-            text-align: center;
-            padding: 2rem;
+
+        /* Imagen al 60% */
+        .centered-image {
+            display: block;
+            margin: 20px auto;
+            width: 60%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
+
         #Buscar {
-            max-width: 500px;
+            width: 90%;
+            max-width: 600px;
             margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        footer {
+            width: 100%;
+        }
+
+        /* Responsive para celular */
+        @media (max-width: 768px) {
+            .centered-image {
+                width: 40%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h3 {
+                font-size: 1rem;
+            }
+
+            #Buscar {
+                width: 95%;
+            }
+        }
+
+        /* Responsive para pantallas grandes */
+        @media (min-width: 1200px) {
+            .centered-image {
+                width: 20%;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h3 {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">PORTAL</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarNav" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
                         <a class="nav-link" href="{{url_for('Contacts')}}">Agenda</a>
                     </li>
@@ -59,24 +120,27 @@
     <main>
         <section>
             <h1 class="parrafo-blanco">Bienvenido a PORTAL</h1>
+
             <div>
                 <img src="static/images/portal2.jpg" alt="logo" class="centered-image">
             </div>
-            <h3 class="parrafo-blanco">¡Realiza búsquedas de artículos, copia la url de la barra de navegación y pégala en Mis Tiendas Preferidas!</h3>
+
+            <h3 class="parrafo-blanco">
+                ¡Realiza búsquedas de artículos, copia la URL de la barra de navegación
+                y pégala en Mis Tiendas Preferidas!
+            </h3>
         </section>
 
         <div id="Buscar">
             <form>
-                <script async src="https://cse.google.com/cse.js?cx=751447becd44d462b">
-</script>
-<!-- <div class="gcse-searchbox-only"></div> -->
-<div class="gcse-search"></div>
+                <script async src="https://cse.google.com/cse.js?cx=751447becd44d462b"></script>
+                <div class="gcse-search"></div>
             </form>
         </div>
     </main>
 
     <footer class="bg-light text-center py-3 mt-auto">
-        <p>© 2024 PORTAL. Todos los derechos reservados.</p>
+        <p>© 2026 PORTAL. Todos los derechos reservados.</p>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -84,4 +148,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
 

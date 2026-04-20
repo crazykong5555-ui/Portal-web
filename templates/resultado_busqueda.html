@@ -1,0 +1,49 @@
+{% extends 'layout.html' %} {% block body %}
+
+<div class="card card-body">
+  <h3>Resultado de búsqueda: "{{ termino }}"</h3>
+
+  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
+  in messages %}
+  <div class="alert alert-success">{{ message }}</div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Descripción</th>
+        <th>URL</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fila in resultados %}
+      <tr>
+        <td>{{ fila[0] }}</td>
+        <td>{{ fila[1] }}</td>
+
+        <td>
+          <a
+            href="{{ fila[4] | trim }}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ fila[2] }}
+          </a>
+        </td>
+
+        <td>{{ fila[3] }}</td>
+        <td>{{ fila[4] }}</td>
+        <td>{{ fila[5] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="/urls" class="btn btn-primary">Volver</a>
+</div>
+
+{% endblock %}

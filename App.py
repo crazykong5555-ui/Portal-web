@@ -29,7 +29,7 @@ else:
     # fallback local (XAMPP / Laragon)
     app.config['MYSQL_HOST'] = os.getenv("MYSQLHOST", "localhost")
     app.config['MYSQL_USER'] = os.getenv("MYSQLUSER", "root")
-    app.config['MYSQL_PASSWORD'] = os.getenv("MYSQLPASSWORD", "")
+    app.config['MYSQL_PASSWORD'] = os.getenv("MYSQLPASSWORD", "BaseDeDatos555")
     app.config['MYSQL_DB'] = os.getenv("MYSQLDATABASE", "flaskcontacts")
     app.config['MYSQL_PORT'] = int(os.getenv("MYSQLPORT", 3306))
 
@@ -268,6 +268,44 @@ def delete_url(id):
 # =========================
 # RUN
 # =========================
+@app.route('/buscar', methods=['GET'])
+def buscar_global():
+
+    termino = request.args.get('q', '').strip()
+
+    cur = mysql.connection.cursor()
+
+    query = """
+        SELECT 'CONTACTO' AS tipo, id, fullname AS dato1, phone AS dato2, email AS dato3, url AS dato4
+        FROM contacts1
+        WHERE fullname LIKE %s
+           OR phone LIKE %s
+           OR email LIKE %s
+           OR url LIKE %s
+
+        UNION
+
+        SELECT 'URL' AS tipo, id, url AS dato1, '' AS dato2, '' AS dato3, '' AS dato4
+        FROM urls
+        WHERE url LIKE %s
+    """
+
+    like_term = f"%{termino}%"
+
+    cur.execute(query, (
+        like_term, like_term, like_term, like_term,
+        like_term
+    ))
+
+    resultados = cur.fetchall()
+
+    flash(f'Búsqueda exitosa: {len(resultados)} resultado(s) encontrados')
+
+    return render_template(
+        'resultado_busqueda.html',
+        resultados=resultados,
+        termino=termino
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

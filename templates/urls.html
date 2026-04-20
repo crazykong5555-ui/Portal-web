@@ -99,20 +99,20 @@
 
 <script>
 function buscar() {
-    const input = document.getElementById("searchInput").value.toLowerCase().trim();
-    const filas = document.querySelectorAll("tbody tr");
+    const input = document.getElementById("searchInput").value.trim();
 
-    filas.forEach(fila => {
-        const texto = fila.textContent.toLowerCase();
-        fila.style.display = texto.includes(input) ? "" : "none";
-    });
-});
+    if (input === "") {
+        alert("Por favor ingresa texto para buscar");
+        return;
+    }
+
+    window.location.href = "/buscar?q=" + encodeURIComponent(input);
 }
+
 function limpiarBusqueda() {
     document.getElementById("searchInput").value = "";
-    const filas = document.querySelectorAll("tbody tr");
-    filas.forEach(fila => fila.style.display = "");
 }
 </script>
+
 
 {% endblock %}
