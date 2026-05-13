@@ -99,13 +99,13 @@ messages %}
 <!-- Pagination -->
 <div class="pagination">
   {% if page > 1 %}
-  <a href="{{ url_for('Urls', page=page-1) }}" class="btn btn-primary">Atrás</a>
+  <a href="{{ url_for('urls', page=page-1) }}" class="btn btn-primary">Atrás</a>
   {% endif %} {% for p in range(1, total_pages + 1) %} {% if p == page %}
   <strong class="btn btn-secondary">{{ p }}</strong>
   {% else %}
-  <a href="{{ url_for('Urls', page=p) }}" class="btn btn-primary">{{ p }}</a>
+  <a href="{{ url_for('urls', page=p) }}" class="btn btn-primary">{{ p }}</a>
   {% endif %} {% endfor %} {% if page < total_pages %}
-  <a href="{{ url_for('Urls', page=page+1) }}" class="btn btn-primary"
+  <a href="{{ url_for('urls', page=page+1) }}" class="btn btn-primary"
     >Adelante</a
   >
   {% endif %}

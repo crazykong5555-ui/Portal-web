@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from math import ceil
 import os
@@ -16,7 +17,8 @@ mysql_url = os.getenv("MYSQL_URL")
 print("MYSQL_URL:", mysql_url)
 
 if mysql_url and mysql_url.startswith("mysql://"):
-    # conexión usando MYSQL_URL (Railway)
+
+    # Railway / Producción
     url = urllib.parse.urlparse(mysql_url)
 
     app.config['MYSQL_HOST'] = url.hostname
@@ -26,15 +28,15 @@ if mysql_url and mysql_url.startswith("mysql://"):
     app.config['MYSQL_PORT'] = url.port or 3306
 
 else:
-    # fallback local (XAMPP / Laragon)
+
+    # Localhost (XAMPP / Laragon)
     app.config['MYSQL_HOST'] = os.getenv("MYSQLHOST", "localhost")
     app.config['MYSQL_USER'] = os.getenv("MYSQLUSER", "root")
     app.config['MYSQL_PASSWORD'] = os.getenv("MYSQLPASSWORD", "BaseDeDatos555")
-    app.config['MYSQL_DB'] = os.getenv("MYSQLDATABASE", "flaskcontacts")
+    app.config['MYSQL_DB'] = os.getenv("MYSQLDATABASE", "portal")
     app.config['MYSQL_PORT'] = int(os.getenv("MYSQLPORT", 3306))
 
 mysql = MySQL(app)
-
 # =========================
 # CREAR TABLAS AUTOMÁTICAMENTE
 # =========================
@@ -71,21 +73,59 @@ def create_tables():
 # ejecutar al iniciar
 with app.app_context():
     create_tables()
+# ==============================
+# LOGIN
+# ==============================
 
-# =========================
-# HOME
-# =========================
+@app.route('/', methods=['GET','POST'])
+def login():
 
-@app.route('/')
-def Index():
+    if request.method == 'POST':
+
+        user = request.form['user']
+        password = request.form['password']
+
+        if user == "camilo" and password == "123456":
+
+            session['usuario'] = user
+            return redirect(url_for('index'))
+
+        else:
+            flash('Usuario o contraseña incorrectos')
+
+    return render_template('login.html')
+
+
+# ==============================
+# INDEX
+# ==============================
+
+@app.route('/index')
+def index():
+
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
     return render_template('index.html')
+
+
+# ==============================
+# LOGOUT
+# ==============================
+
+@app.route('/logout')
+def logout():
+
+    session.pop('usuario', None)
+    return redirect(url_for('login'))
+
 
 # =========================
 # CONTACTOS
 # =========================
 
 @app.route('/contacts')
-def Contacts():
+def contacts():
 
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM contacts1')
@@ -113,7 +153,7 @@ def add_contact():
 
     flash('Contacto guardado')
 
-    return redirect(url_for('Contacts'))
+    return redirect(url_for('contacts'))
 
 
 @app.route('/edit/<id>')
@@ -150,7 +190,7 @@ def update_contact(id):
 
     flash('Contacto actualizado')
 
-    return redirect(url_for('Contacts'))
+    return redirect(url_for('contacts'))
 
 
 @app.route('/delete/<id>')
@@ -164,14 +204,14 @@ def delete_contact(id):
 
     flash('Contacto eliminado')
 
-    return redirect(url_for('Contacts'))
+    return redirect(url_for('contacts'))
 
 # =========================
 # URLS
 # =========================
 
 @app.route('/urls')
-def Urls():
+def urls():
 
     page = request.args.get('page',1,type=int)
     per_page = 4
@@ -221,7 +261,7 @@ def add_url():
 
     flash('URL guardada')
 
-    return redirect(url_for('Urls'))
+    return redirect(url_for('urls'))
 
 
 @app.route('/edit_url/<id>')
@@ -249,7 +289,7 @@ def update_url(id):
 
     flash("URL actualizada")
 
-    return redirect(url_for('Urls'))
+    return redirect(url_for('urls'))
 
 
 @app.route('/delete_url/<id>')
@@ -263,7 +303,7 @@ def delete_url(id):
 
     flash("URL eliminada")
 
-    return redirect(url_for('Urls'))
+    return redirect(url_for('urls'))
 
 # =========================
 # RUN
@@ -307,6 +347,14 @@ def buscar_global():
         termino=termino
     )
 
-if __name__ == "__main__":
-    app.run(debug=True)
 
+# ==============================
+# RUN SERVER
+# ==============================
+
+if __name__ == '__main__':
+
+    with app.app_context():
+        create_tables()
+
+    app.run(host='0.0.0.0', port=5000, debug=True)
