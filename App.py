@@ -1,4 +1,10 @@
-
+# =========================
+# Aplicacion Web PORTAL
+# 
+#La Fabrica Del Software
+#Tech. Camilo Torrecillas Ardila
+#
+# =========================
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from math import ceil
