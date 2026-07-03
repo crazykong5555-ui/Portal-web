@@ -7,9 +7,12 @@
 # =========================
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
+from dotenv import load_dotenv
 from math import ceil
 import os
 import urllib.parse
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey"
