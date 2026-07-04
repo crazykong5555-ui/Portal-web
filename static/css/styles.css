@@ -2,12 +2,7 @@ body {
     background: url("../images/background.jfif") no-repeat center center fixed;
     background-size: cover;
     text-align: center;
-    font-family: "MiFuente", Arial, sans-serif;
-}
-
-@font-face {
-    font-family: "MiFuente";
-    src: url("../css/gotika_ornament/GotikaOrnament_PERSONAL_USE_ONLY.otf");
+    font-family: Arial, sans-serif;
 }
 
 .centered-image {
