@@ -150,63 +150,62 @@
                   <td>{{ contact.4 }}</td>
 
                   <td class="text-center">
-                    <!-- EDITAR -->
-                    <a
-                      href="/edit/{{ contact.0 }}"
-                      class="btn btn-secondary btn-sm mb-1"
-                      title="Editar"
-                    >
-                      <i class="fas fa-edit"></i>
-                    </a>
 
-                    <!-- LLAMAR -->
-                    <a
-                      href="tel:{{ contact.2 }}"
-                      class="btn btn-info btn-sm mb-1"
-                      title="Llamar"
-                    >
-                      <i class="fas fa-phone"></i>
-                    </a>
+    <!-- Primera fila -->
+    <div class="d-flex justify-content-center mb-1">
 
-                    <!-- WHATSAPP -->
-                    <a
-                      href="https://wa.me/{{ contact.2 }}"
-                      target="_blank"
-                      class="btn btn-success btn-sm mb-1"
-                      title="WhatsApp"
-                    >
-                      <i class="fab fa-whatsapp"></i>
-                    </a>
+        <!-- Editar -->
+        <a href="/edit/{{ contact.0 }}"
+           class="btn btn-secondary btn-sm mx-1"
+           title="Editar">
+            <i class="fas fa-edit"></i>
+        </a>
 
-                    <!-- CORREO -->
-                    <a
-                      href="mailto:{{ contact.3 }}?subject=Saludos desde PORTAL Agenda"
-                      class="btn btn-primary btn-sm mb-1"
-                      title="Enviar correo"
-                    >
-                      <i class="fas fa-envelope"></i>
-                    </a>
+        <!-- Llamar -->
+        <a href="tel:{{ contact.2 }}"
+           class="btn btn-info btn-sm mx-1"
+           title="Llamar">
+            <i class="fas fa-phone"></i>
+        </a>
 
-                    <!-- WEB -->
-                    <a
-                      href="{{ contact.4 }}"
-                      target="_blank"
-                      class="btn btn-warning btn-sm mb-1"
-                      title="Abrir sitio web"
-                    >
-                      <i class="fas fa-globe"></i>
-                    </a>
+        <!-- WhatsApp -->
+        <a href="https://wa.me/{{ contact.2 }}"
+           target="_blank"
+           class="btn btn-success btn-sm mx-1"
+           title="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
 
-                    <!-- BORRAR -->
-                    <a
-                      href="/delete/{{ contact.0 }}"
-                      class="btn btn-danger btn-sm btn-delete"
-                      onclick="return confirm('¿Desea eliminar este contacto?');"
-                      title="Borrar"
-                    >
-                      <i class="fas fa-trash"></i>
-                    </a>
-                  </td>
+    </div>
+
+    <!-- Segunda fila -->
+    <div class="d-flex justify-content-center">
+
+        <!-- Correo -->
+        <a href="mailto:{{ contact.3 }}"
+           class="btn btn-primary btn-sm mx-1"
+           title="Correo">
+            <i class="fas fa-envelope"></i>
+        </a>
+
+        <!-- Web -->
+        <a href="{{ contact.4 }}"
+           target="_blank"
+           class="btn btn-warning btn-sm mx-1"
+           title="Sitio Web">
+            <i class="fas fa-globe"></i>
+        </a>
+
+        <!-- Borrar -->
+        <a href="/delete/{{ contact.0 }}"
+           class="btn btn-danger btn-sm mx-1 btn-delete"
+           title="Borrar">
+            <i class="fas fa-trash"></i>
+        </a>
+
+    </div>
+
+</td>
                 </tr>
 
                 {% endfor %}

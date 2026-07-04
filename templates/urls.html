@@ -54,12 +54,12 @@ messages %}
 <div class="card card-body">
   <div class="table-responsive">
     <table class="table table-striped table-bordered bg-white table-sm">
-      <thead>
+      <thead class="thead-dark">
         <tr>
-          <th>Favicon</th>
-          <th>Domain Name</th>
-          <th style="text-align: left">Fullname</th>
-          <th>Operators</th>
+          <th width="8%">Icono</th>
+          <th width="20%">Dominio</th>
+          <th width="47%">URL</th>
+          <th width="25%">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -81,13 +81,37 @@ messages %}
           <td></td>
           {% endif %}
 
-          <td>
-            <a href="/edit_url/{{ url[0] }}" class="btn btn-secondary btn-sm"
-              >Edit URL</a
-            >
-            <a href="/delete_url/{{ url[0] }}" class="btn btn-danger btn-delete"
-              >Delete URL</a
-            >
+          <td class="text-center">
+            <div class="d-flex justify-content-center mb-1">
+              <!-- Abrir Sitio -->
+              <a
+                href="{{ link }}"
+                target="_blank"
+                class="btn btn-success btn-sm mx-1"
+                title="Abrir Sitio"
+              >
+                <i class="fas fa-globe"></i>
+              </a>
+
+              <!-- Editar -->
+              <a
+                href="/edit_url/{{ url[0] }}"
+                class="btn btn-secondary btn-sm mx-1"
+                title="Editar"
+              >
+                <i class="fas fa-edit"></i>
+              </a>
+
+              <!-- Eliminar -->
+              <a
+                href="/delete_url/{{ url[0] }}"
+                class="btn btn-danger btn-sm mx-1 btn-delete"
+                onclick="return confirm('¿Eliminar esta URL?');"
+                title="Eliminar"
+              >
+                <i class="fas fa-trash"></i>
+              </a>
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -127,5 +151,69 @@ messages %}
     document.getElementById("searchInput").value = "";
   }
 </script>
+<style>
 
+.table td{
+    vertical-align:middle;
+}
+
+.table th{
+    text-align:center;
+}
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+.table img{
+    width:24px;
+    height:24px;
+}
+
+td:last-child{
+    min-width:150px;
+}
+
+td:last-child .btn{
+    width:36px;
+    height:36px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:6px;
+}
+
+td:last-child i{
+    font-size:15px;
+}
+
+.pagination{
+
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:20px;
+
+}
+
+@media (max-width:768px){
+
+    .table{
+
+        font-size:13px;
+
+    }
+
+    td:last-child .btn{
+
+        width:32px;
+        height:32px;
+
+    }
+
+}
+
+</style>
 {% endblock %}
