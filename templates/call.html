@@ -1,0 +1,125 @@
+{% extends 'layout.html' %} {% block body %}
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+          <h3 class="mb-0">📞 PORTAL CALL SERVICE</h3>
+        </div>
+
+        <div class="card-body text-center">
+          <!-- ID DEL CONTACTO -->
+
+          <input type="hidden" id="contactId" value="{{ contact.id }}" />
+
+          <!-- FOTO -->
+
+          <img
+            src="{{ url_for('static', filename='img/user.png') }}"
+            class="rounded-circle border shadow mb-3"
+            width="120"
+            height="120"
+          />
+
+          <!-- NOMBRE -->
+
+          <h2 class="fw-bold">{{ contact.fullname }}</h2>
+
+          <!-- TELEFONO -->
+
+          <h4 class="text-muted">{{ contact.phone }}</h4>
+
+          <hr />
+
+          <!-- ESTADO -->
+
+          <h5>Estado</h5>
+
+          <h4>
+            <span id="status" class="badge bg-success">
+              Listo para llamar
+            </span>
+          </h4>
+
+          <br />
+
+          <!-- DURACION -->
+
+          <div class="alert alert-light">
+            <strong>Duración</strong>
+
+            <h3 id="timer">00:00</h3>
+          </div>
+
+          <!-- HORA -->
+
+          <div class="alert alert-secondary">
+            Hora
+
+            <h5 id="clock">--:--:--</h5>
+          </div>
+
+          <!-- CONEXION -->
+
+          <div class="alert alert-info">
+            Estado conexión
+
+            <br />
+
+            <span id="network" class="badge bg-secondary"> Desconectado </span>
+          </div>
+
+          <hr />
+
+          <!-- TECLADO -->
+
+          <div class="row g-2">
+            {% for n in ['1','2','3','4','5','6','7','8','9','*','0','#'] %}
+
+            <div class="col-4">
+              <button
+                type="button"
+                class="btn btn-outline-dark w-100 keypad"
+                data-key="{{ n }}"
+              >
+                {{ n }}
+              </button>
+            </div>
+
+            {% endfor %}
+          </div>
+
+          <br />
+
+          <!-- BOTONES -->
+
+          <div class="d-grid gap-2">
+            <button id="btnCall" class="btn btn-success btn-lg">
+              📞 LLAMAR
+            </button>
+
+            <button id="btnHangup" class="btn btn-danger btn-lg">
+              📵 COLGAR
+            </button>
+
+            <a href="/contacts" class="btn btn-secondary">
+              ← Regresar a Agenda
+            </a>
+          </div>
+        </div>
+
+        <div class="card-footer text-center">
+          <small>
+            Contacto ID:
+            <strong>{{ contact.id }}</strong>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/call.js') }}"></script>
+
+{% endblock %}

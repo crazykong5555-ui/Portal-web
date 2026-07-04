@@ -150,62 +150,67 @@
                   <td>{{ contact.4 }}</td>
 
                   <td class="text-center">
+                    <!-- Primera fila -->
+                    <div class="d-flex justify-content-center mb-1">
+                      <!-- Editar -->
+                      <a
+                        href="/edit/{{ contact.0 }}"
+                        class="btn btn-secondary btn-sm mx-1"
+                        title="Editar"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </a>
 
-    <!-- Primera fila -->
-    <div class="d-flex justify-content-center mb-1">
+                      <!-- Llamar -->
+                      <a
+                        href="{{ url_for('call', id=contact.0) }}"
+                        class="btn btn-success btn-sm"
+                        title="Llamar"
+                      >
+                        <i class="fas fa-phone"></i>
+                      </a>
+                      <!-- WhatsApp -->
+                      <a
+                        href="https://wa.me/{{ contact.2 }}"
+                        target="_blank"
+                        class="btn btn-success btn-sm mx-1"
+                        title="WhatsApp"
+                      >
+                        <i class="fab fa-whatsapp"></i>
+                      </a>
+                    </div>
 
-        <!-- Editar -->
-        <a href="/edit/{{ contact.0 }}"
-           class="btn btn-secondary btn-sm mx-1"
-           title="Editar">
-            <i class="fas fa-edit"></i>
-        </a>
+                    <!-- Segunda fila -->
+                    <div class="d-flex justify-content-center">
+                      <!-- Correo -->
+                      <a
+                        href="mailto:{{ contact.3 }}"
+                        class="btn btn-primary btn-sm mx-1"
+                        title="Correo"
+                      >
+                        <i class="fas fa-envelope"></i>
+                      </a>
 
-        <!-- Llamar -->
-        <a href="tel:{{ contact.2 }}"
-           class="btn btn-info btn-sm mx-1"
-           title="Llamar">
-            <i class="fas fa-phone"></i>
-        </a>
+                      <!-- Web -->
+                      <a
+                        href="{{ contact.4 }}"
+                        target="_blank"
+                        class="btn btn-warning btn-sm mx-1"
+                        title="Sitio Web"
+                      >
+                        <i class="fas fa-globe"></i>
+                      </a>
 
-        <!-- WhatsApp -->
-        <a href="https://wa.me/{{ contact.2 }}"
-           target="_blank"
-           class="btn btn-success btn-sm mx-1"
-           title="WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-        </a>
-
-    </div>
-
-    <!-- Segunda fila -->
-    <div class="d-flex justify-content-center">
-
-        <!-- Correo -->
-        <a href="mailto:{{ contact.3 }}"
-           class="btn btn-primary btn-sm mx-1"
-           title="Correo">
-            <i class="fas fa-envelope"></i>
-        </a>
-
-        <!-- Web -->
-        <a href="{{ contact.4 }}"
-           target="_blank"
-           class="btn btn-warning btn-sm mx-1"
-           title="Sitio Web">
-            <i class="fas fa-globe"></i>
-        </a>
-
-        <!-- Borrar -->
-        <a href="/delete/{{ contact.0 }}"
-           class="btn btn-danger btn-sm mx-1 btn-delete"
-           title="Borrar">
-            <i class="fas fa-trash"></i>
-        </a>
-
-    </div>
-
-</td>
+                      <!-- Borrar -->
+                      <a
+                        href="/delete/{{ contact.0 }}"
+                        class="btn btn-danger btn-sm mx-1 btn-delete"
+                        title="Borrar"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                  </td>
                 </tr>
 
                 {% endfor %}

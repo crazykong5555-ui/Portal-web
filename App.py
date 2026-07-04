@@ -355,8 +355,77 @@ def buscar_global():
         resultados=resultados,
         termino=termino
     )
+# ==============================
+# CALL
+# ==============================
 
+@app.route('/call/<int:id>')
+def call(id):
 
+    cur = mysql.connection.cursor()
+
+    cur.execute(
+        "SELECT id, fullname, phone FROM contacts1 WHERE id=%s",
+        (id,)
+    )
+
+    row = cur.fetchone()
+
+    cur.close()
+
+    if row is None:
+        return redirect(url_for('contacts'))
+
+    contact = {
+        "id": row[0],
+        "fullname": row[1],
+        "phone": row[2]
+    }
+
+    return render_template("call.html", contact=contact)
+
+@app.route('/call/start/<int:id>')
+def start_call(id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT phone
+        FROM contacts1
+        WHERE id=%s
+    """, (id,))
+
+    row = cur.fetchone()
+
+    cur.close()
+
+    if row is None:
+        return {
+            "status":"error",
+            "message":"Contacto no encontrado"
+        }
+
+    phone=row[0]
+
+    print("Llamando a:",phone)
+
+    # Aquí se llamará Portal Call Service
+    # portal_call_service.call(phone)
+
+    return {
+        "status":"ok",
+        "message":"Marcando "+phone
+    }
+    
+@app.route('/call/end/<int:id>')
+def end_call(id):
+
+    print("Llamada finalizada:", id)
+
+    return {
+        "status": "ok",
+        "message": "Llamada finalizada"
+    } 
 # ==============================
 # RUN SERVER
 # ==============================
