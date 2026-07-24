@@ -6,44 +6,27 @@
 #
 # =========================
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 from math import ceil
 import os
-import urllib.parse
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "mysecretkey"
+
+app.secret_key = os.getenv("SECRET_KEY")
 
 # =========================
 # CONFIGURACIÓN MYSQL
 # =========================
 
-mysql_url = os.getenv("MYSQL_URL")
-
-print("MYSQL_URL:", mysql_url)
-
-if mysql_url and mysql_url.startswith("mysql://"):
-
-    # Railway / Producción
-    url = urllib.parse.urlparse(mysql_url)
-
-    app.config['MYSQL_HOST'] = url.hostname
-    app.config['MYSQL_USER'] = url.username
-    app.config['MYSQL_PASSWORD'] = url.password
-    app.config['MYSQL_DB'] = url.path.replace("/", "")
-    app.config['MYSQL_PORT'] = url.port or 3306
-
-else:
-
-    # Localhost (XAMPP / Laragon)
-    app.config['MYSQL_HOST'] = os.getenv("MYSQLHOST", "localhost")
-    app.config['MYSQL_USER'] = os.getenv("MYSQLUSER", "root")
-    app.config['MYSQL_PASSWORD'] = os.getenv("MYSQLPASSWORD", "BaseDeDatos555")
-    app.config['MYSQL_DB'] = os.getenv("MYSQLDATABASE", "portal")
-    app.config['MYSQL_PORT'] = int(os.getenv("MYSQLPORT", 3306))
+app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST")
+app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 3306))
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
+app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
 
 mysql = MySQL(app)
 # =========================
