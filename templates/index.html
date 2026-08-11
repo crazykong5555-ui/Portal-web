@@ -1,152 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PORTAL</title>
-    <link rel="icon" href="{{ url_for('static', filename='images/crown.ico') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/crown.ico') }}">
-
-    <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css">
-    <link rel="stylesheet" href="static/css/index.css">
-
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* corregido */
-        }
-
-        main {
-            flex: 1;
-        }
-
-        section {
-            text-align: center;
-            padding: 2rem 1rem;
-        }
-
-        .parrafo-blanco {
-            color: white;
-            text-align: center;
-            padding: 0 1rem;
-        }
-
-        /* Imagen al 60% */
-        .centered-image {
-            display: block;
-            margin: 20px auto;
-            width: 60%;
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        #Buscar {
-            width: 90%;
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        footer {
-            width: 100%;
-        }
-
-        /* Responsive para celular */
-        @media (max-width: 768px) {
-            .centered-image {
-                width: 40%;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            h3 {
-                font-size: 1rem;
-            }
-
-            #Buscar {
-                width: 95%;
-            }
-        }
-
-        /* Responsive para pantallas grandes */
-        @media (min-width: 1200px) {
-            .centered-image {
-                width: 20%;
-            }
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            h3 {
-                font-size: 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">PORTAL</a>
-
-            <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarNav" aria-controls="navbarNav"
-                aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{{url_for('contacts')}}">Agenda</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('urls')}}">Mis Tiendas preferidas</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <section>
-            <h1 class="parrafo-blanco">Bienvenido a PORTAL</h1>
-
-            <div>
-                <img src="static/images/portal2.jpg" alt="logo" class="centered-image">
-            </div>
-
-            <h3 class="parrafo-blanco">
-                ¡Realiza búsquedas de artículos, copia la URL de la barra de navegación
-                y pégala en Mis Tiendas Preferidas!
-            </h3>
-        </section>
-
-        <div id="Buscar">
-            <form>
-                <script async src="https://cse.google.com/cse.js?cx=751447becd44d462b"></script>
-                <div class="gcse-search"></div>
-            </form>
-        </div>
-    </main>
-
-    <footer class="bg-light text-center py-3 mt-auto">
-        <p>© 2026 PORTAL. Todos los derechos reservados.</p>
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
-
-
+{% extends 'layout.html' %}
+{% block title %}Inicio · Portal{% endblock %}
+{% block body %}
+<section class="home-hero">
+  <div class="home-copy">
+    <span class="eyebrow"><i class="fa-solid fa-sparkles"></i> Todo en un solo lugar</span>
+    <h1>Organiza tus enlaces y <span>conecta</span> con facilidad.</h1>
+    <p>Guarda tus sitios favoritos, mantén tu agenda al día y encuentra lo que necesitas sin perder tiempo.</p>
+    <form class="google-search" action="https://www.google.com/search" method="get" role="search" target="_blank" rel="noopener">
+      <label class="sr-only" for="google-query">Buscar en Google</label>
+      <i class="fa-brands fa-google" aria-hidden="true"></i>
+      <input id="google-query" name="q" type="search" placeholder="Buscar en Google" required>
+      <button class="btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+    </form>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('urls') }}"><i class="fa-solid fa-bookmark"></i> Guardar un sitio</a>
+      <a class="btn btn-light btn-lg" href="{{ url_for('contacts') }}"><i class="fa-solid fa-address-book"></i> Ver contactos</a>
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="art-orb orb-one"></div><div class="art-orb orb-two"></div>
+    <div class="art-window"><div class="art-dots"><span></span><span></span><span></span></div><div class="art-search"><i class="fa-solid fa-magnifying-glass"></i><span>Encuentra lo que buscas</span></div><div class="art-result"><i class="fa-solid fa-link"></i><div><b>Tus sitios favoritos</b><small>Siempre a un clic</small></div></div><div class="art-result"><i class="fa-solid fa-user-group"></i><div><b>Tu agenda</b><small>Contactos organizados</small></div></div></div>
+  </div>
+</section>
+<section class="quick-grid">
+  <a class="quick-card" href="{{ url_for('urls') }}"><span class="quick-icon violet"><i class="fa-solid fa-bookmark"></i></span><div><h2>Mis sitios</h2><p>Guarda y abre tus páginas favoritas.</p></div><i class="fa-solid fa-arrow-right arrow"></i></a>
+  <a class="quick-card" href="{{ url_for('contacts') }}"><span class="quick-icon green"><i class="fa-solid fa-address-book"></i></span><div><h2>Agenda</h2><p>Gestiona tus contactos y comunícate.</p></div><i class="fa-solid fa-arrow-right arrow"></i></a>
+</section>
+{% endblock %}
+{% block head %}<style>
+.home-hero{position:relative;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:45px;min-height:420px;padding:50px 6%;overflow:hidden;border-radius:22px;background:linear-gradient(122deg,#28225c,#5639e9 60%,#826cff);color:#fff}.home-hero:after{position:absolute;right:-120px;bottom:-190px;width:440px;height:440px;border:70px solid rgba(255,255,255,.06);border-radius:50%;content:""}.home-copy{position:relative;z-index:1}.eyebrow{display:inline-block;margin-bottom:16px;padding:7px 11px;border:1px solid rgba(255,255,255,.2);border-radius:30px;background:rgba(255,255,255,.11);font-size:.78rem;font-weight:600}.home-hero h1{margin:0 0 17px;font-family:Outfit,sans-serif;font-size:clamp(2.1rem,4vw,3.6rem);font-weight:700;line-height:1.04;letter-spacing:-.04em}.home-hero h1 span{color:#c8bdff}.home-hero p{max-width:520px;margin:0;color:#ddd9ff;font-size:1.03rem;line-height:1.7}.hero-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:27px}.hero-actions .btn{padding:11px 17px;font-size:.9rem}.hero-actions .btn-primary{background:#fff;border-color:#fff;color:#4a31d9}.hero-actions .btn-light{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.17);color:#fff}.hero-art{position:relative;z-index:1;height:300px}.art-window{position:absolute;top:15px;right:3%;width:min(100%,340px);padding:16px;border:1px solid rgba(255,255,255,.35);border-radius:18px;background:rgba(255,255,255,.94);box-shadow:0 25px 45px rgba(17,9,69,.28);color:#26304d}.art-dots{display:flex;gap:5px;margin-bottom:17px}.art-dots span{width:7px;height:7px;border-radius:50%;background:#e4e5ec}.art-dots span:first-child{background:#ff8b9a}.art-search{display:flex;gap:9px;align-items:center;margin-bottom:14px;padding:10px;border-radius:8px;background:#f0eff8;color:#8a91a7;font-size:.75rem}.art-result{display:flex;gap:11px;align-items:center;margin:8px 0;padding:11px;border-radius:9px;border:1px solid #eef0f5}.art-result>i{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#eeebff;color:#6549ed;font-size:.8rem}.art-result b,.art-result small{display:block}.art-result b{font-size:.78rem}.art-result small{margin-top:2px;color:#9299ad;font-size:.66rem}.art-orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.14)}.orb-one{top:0;right:0;width:78px;height:78px}.orb-two{bottom:0;left:15px;width:45px;height:45px}.quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:22px}.quick-card{display:flex;align-items:center;gap:14px;padding:20px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 5px 16px rgba(24,33,58,.03);transition:.2s}.quick-card:hover{color:var(--ink);transform:translateY(-2px);box-shadow:0 11px 25px rgba(24,33,58,.08);text-decoration:none}.quick-card h2{margin:0 0 4px;font-family:Outfit,sans-serif;font-size:1rem;font-weight:700}.quick-card p{margin:0;color:var(--muted);font-size:.84rem}.quick-icon{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;border-radius:11px}.quick-icon.violet{background:#efedff;color:#5b3df5}.quick-icon.green{background:#e7f9f0;color:#12a66a}.quick-card .arrow{margin-left:auto;color:#9da3b5}@media(max-width:767px){.home-hero{grid-template-columns:1fr;padding:38px 25px;gap:8px}.hero-art{height:220px}.art-window{right:0;width:285px}.quick-grid{grid-template-columns:1fr}}@media(max-width:400px){.hero-art{display:none}.quick-grid{margin-top:18px}}
+.google-search{display:flex;align-items:center;gap:10px;max-width:520px;margin-top:24px;padding:6px 6px 6px 15px;border:1px solid rgba(255,255,255,.24);border-radius:12px;background:#fff;box-shadow:0 10px 25px rgba(17,9,69,.16)}.google-search>i{color:#4285f4;font-size:1.1rem}.google-search input{min-width:0;flex:1;border:0;outline:0;color:#26304d;font:500 .92rem 'DM Sans',sans-serif}.google-search input::placeholder{color:#8a91a7}.google-search .btn{padding:10px 15px;border:0;border-radius:8px;background:#4285f4;color:#fff;font-size:.88rem;font-weight:600}.google-search .btn:hover{background:#2869d8;color:#fff}.hero-actions{margin-top:18px}@media(max-width:767px){.google-search{margin-top:20px}}@media(max-width:400px){.google-search{flex-wrap:wrap;padding:10px}.google-search input{min-width:calc(100% - 32px)}.google-search .btn{width:100%}}
+</style>{% endblock %}

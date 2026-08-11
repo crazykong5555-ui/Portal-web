@@ -1,13 +1,5 @@
-const btnDelete = document.querySelectorAll('.btn-delete ')
-
-if(btnDelete) {
- const btnArray = Array.from(btnDelete);
- btnArray.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-        if(!confirm('¿ Esta seguro de borrar este registro ? ')){
-            e.preventDefault();
-        }
-    });
- });
-}
-
+document.querySelectorAll('.btn-delete').forEach((button) => {
+  button.addEventListener('click', (event) => {
+    if (!window.confirm('¿Seguro que deseas eliminar este registro?')) event.preventDefault();
+  });
+});

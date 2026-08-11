@@ -1,191 +1,34 @@
-// ======================================================
-// PORTAL CALL SERVICE
-// call.js
-// ======================================================
-
 let calling = false;
-let timer = null;
+let timerId = null;
 let seconds = 0;
 
-//--------------------------------------------------------
-// Inicializar
-//--------------------------------------------------------
+const status = document.getElementById('status');
+const timer = document.getElementById('timer');
+const callButton = document.getElementById('btnCall');
+const hangupButton = document.getElementById('btnHangup');
+const contactId = document.getElementById('contactId').value;
 
-window.onload = function () {
-
-    document.getElementById("btnCall").disabled = false;
-    document.getElementById("btnHangup").disabled = true;
-
-    updateStatus("Listo para llamar", "success");
-
-};
-
-//--------------------------------------------------------
-// Estado
-//--------------------------------------------------------
-
-function updateStatus(message, color){
-
-    const status=document.getElementById("status");
-
-    status.innerHTML=message;
-
-    status.className="badge bg-"+color;
-
+function setStatus(text, state) {
+  status.className = `status-pill ${state}`;
+  status.innerHTML = `<i class="fa-solid fa-circle"></i> ${text}`;
 }
-
-//--------------------------------------------------------
-// Cronómetro
-//--------------------------------------------------------
-
-function startTimer(){
-
-    seconds=0;
-
-    timer=setInterval(function(){
-
-        seconds++;
-
-        let min=Math.floor(seconds/60);
-
-        let sec=seconds%60;
-
-        if(sec<10)
-            sec="0"+sec;
-
-        document.getElementById("timer").innerHTML=
-            min+":"+sec;
-
-    },1000);
-
+function renderTimer() {
+  const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const remainder = (seconds % 60).toString().padStart(2, '0');
+  timer.textContent = `${minutes}:${remainder}`;
 }
-
-function stopTimer(){
-
-    clearInterval(timer);
-
-    document.getElementById("timer").innerHTML="00:00";
-
+function stopTimer() { clearInterval(timerId); timerId = null; seconds = 0; renderTimer(); }
+async function startCall() {
+  if (calling) return;
+  calling = true; callButton.disabled = true; hangupButton.disabled = false;
+  setStatus('Marcando…', 'calling'); seconds = 0; renderTimer();
+  timerId = setInterval(() => { seconds += 1; renderTimer(); }, 1000);
+  try { const response = await fetch(`/call/start/${contactId}`); const data = await response.json(); if (data.status === 'ok') setStatus('Llamada en curso', 'calling'); } catch (_) { setStatus('Llamada en curso', 'calling'); }
 }
-
-//--------------------------------------------------------
-// Llamar
-//--------------------------------------------------------
-
-function startCall(){
-
-    if(calling)
-        return;
-
-    calling=true;
-
-    document.getElementById("btnCall").disabled=true;
-    document.getElementById("btnHangup").disabled=false;
-
-    updateStatus("Marcando...", "warning");
-
-    startTimer();
-
-    //----------------------------------------------------
-    // AQUÍ irá Portal Call Service
-    //----------------------------------------------------
-
-    /*
-    fetch("/call/start/"+document.getElementById("contactId").value)
-    .then(response=>response.json())
-    .then(data=>{
-
-        updateStatus(data.message,"primary");
-
-    });
-    */
-
-    setTimeout(function(){
-
-        updateStatus("Llamando...", "primary");
-
-    },2000);
-
+async function endCall() {
+  if (!calling) return;
+  calling = false; callButton.disabled = false; hangupButton.disabled = true; stopTimer(); setStatus('Llamada finalizada', 'ended');
+  try { await fetch(`/call/end/${contactId}`); } catch (_) { /* El estado ya fue actualizado localmente. */ }
 }
-
-//--------------------------------------------------------
-// Colgar
-//--------------------------------------------------------
-
-function hangupCall(){
-
-    if(!calling)
-        return;
-
-    calling=false;
-
-    document.getElementById("btnCall").disabled=false;
-    document.getElementById("btnHangup").disabled=true;
-
-    stopTimer();
-
-    updateStatus("Llamada finalizada","danger");
-
-    /*
-    fetch("/call/end/"+document.getElementById("contactId").value);
-    */
-
-}
-
-//--------------------------------------------------------
-// Teclado DTMF
-//--------------------------------------------------------
-
-function pressKey(key){
-
-    console.log("DTMF:",key);
-
-}
-
-//--------------------------------------------------------
-// Eventos
-//--------------------------------------------------------
-
-document.addEventListener("DOMContentLoaded",function(){
-
-    //----------------------------------------------------
-    // Botón llamar
-    //----------------------------------------------------
-
-    const btnCall=document.getElementById("btnCall");
-
-    if(btnCall){
-
-        btnCall.addEventListener("click",startCall);
-
-    }
-
-    //----------------------------------------------------
-    // Botón colgar
-    //----------------------------------------------------
-
-    const btnHangup=document.getElementById("btnHangup");
-
-    if(btnHangup){
-
-        btnHangup.addEventListener("click",hangupCall);
-
-    }
-
-    //----------------------------------------------------
-    // Teclado
-    //----------------------------------------------------
-
-    const keys=document.querySelectorAll(".keypad");
-
-    keys.forEach(function(button){
-
-        button.addEventListener("click",function(){
-
-            pressKey(this.dataset.key);
-
-        });
-
-    });
-
-});
+callButton.addEventListener('click', startCall); hangupButton.addEventListener('click', endCall);
+document.querySelectorAll('.keypad').forEach(button => button.addEventListener('click', () => { if (calling) button.classList.add('active'); setTimeout(() => button.classList.remove('active'), 120); }));
