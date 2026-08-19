@@ -6,7 +6,6 @@
 #
 # =========================
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 from math import ceil
@@ -16,7 +15,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY", "development-only-change-me")
 
 # =========================
 # CONFIGURACIÓN MYSQL
@@ -74,8 +73,8 @@ def login():
 
     if request.method == 'POST':
 
-        user = request.form['user']
-        password = request.form['password']
+        user = request.form.get('user', '').strip()
+        password = request.form.get('password', '')
 
         if user == "camilo" and password == "123456":
 
@@ -205,7 +204,7 @@ def delete_contact(id):
 @app.route('/urls')
 def urls():
 
-    page = request.args.get('page',1,type=int)
+    page = max(request.args.get('page', 1, type=int), 1)
     per_page = 4
 
     cur = mysql.connection.cursor()
@@ -225,6 +224,8 @@ def urls():
     total = cur.fetchone()[0]
 
     total_pages = ceil(total/per_page)
+    if total_pages and page > total_pages:
+        page = total_pages
 
     offset=(page-1)*per_page
 
