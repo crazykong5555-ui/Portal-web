@@ -6,10 +6,16 @@
 #
 # =========================
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+import pymysql
+
+# mysqlclient on Windows can fail Aiven TLS negotiation with SEC_E_NO_CREDENTIALS.
+# Flask-MySQLdb uses the MySQLdb API, which PyMySQL provides compatibly.
+pymysql.install_as_MySQLdb()
 from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 from math import ceil
 import os
+import ssl
 
 load_dotenv()
 
@@ -18,14 +24,29 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "development-only-change-me")
 
 # =========================
-# CONFIGURACIÓN MYSQL
+# CONFIGURACIÓN MYSQL AIVEN
 # =========================
 
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST")
-app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", 3306))
+app.config["MYSQL_PORT"] = int(os.getenv("MYSQL_PORT", "3306"))
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
+
+# Flask-MySQLdb forwards MYSQL_CUSTOM_OPTIONS to the database driver.  This
+# enables TLS; MYSQL_SSL by itself is not read by the extension.
+ssl_options = {
+    "check_hostname": False,
+    "cert_reqs": ssl.CERT_NONE,
+}
+if ssl_ca := os.getenv("MYSQL_SSL_CA"):
+    # Download Aiven's CA certificate and set this value for certificate
+    # verification in production, e.g. MYSQL_SSL_CA=./ca.pem.
+    ssl_options = {"ca": ssl_ca}
+
+app.config["MYSQL_CUSTOM_OPTIONS"] = {
+    "ssl": ssl_options,
+}
 
 mysql = MySQL(app)
 # =========================
@@ -117,12 +138,27 @@ def logout():
 
 @app.route('/contacts')
 def contacts():
+    page = max(request.args.get('page', 1, type=int), 1)
+    per_page = 4
 
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM contacts1')
+    cur.execute('SELECT COUNT(*) FROM contacts1')
+    total = cur.fetchone()[0]
+
+    total_pages = ceil(total / per_page)
+    if total_pages and page > total_pages:
+        page = total_pages
+
+    offset = (page - 1) * per_page
+    cur.execute('SELECT * FROM contacts1 LIMIT %s OFFSET %s', (per_page, offset))
     data = cur.fetchall()
 
-    return render_template('contacts.html', contacts=data)
+    return render_template(
+        'contacts.html',
+        contacts=data,
+        page=page,
+        total_pages=total_pages
+    )
 
 
 @app.route('/add_contact', methods=['POST'])
