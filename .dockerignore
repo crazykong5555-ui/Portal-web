@@ -5,6 +5,8 @@ __pycache__/
 .env
 .env.*
 !.env.example
+.env.*
+!.env.example
 .pytest_cache/
 .mypy_cache/
 .coverage

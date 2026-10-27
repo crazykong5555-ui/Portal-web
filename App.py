@@ -21,7 +21,17 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.secret_key = os.getenv("SECRET_KEY", "development-only-change-me")
+app.config["ENVIRONMENT"] = os.getenv("APP_ENV", "development").lower()
+secret_key = os.getenv("SECRET_KEY")
+if app.config["ENVIRONMENT"] == "production" and not secret_key:
+    raise RuntimeError("SECRET_KEY es obligatorio en producción")
+app.secret_key = secret_key or os.urandom(32)
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=app.config["ENVIRONMENT"] == "production",
+    MAX_CONTENT_LENGTH=2 * 1024 * 1024,
+)
 
 # =========================
 # CONFIGURACIÓN MYSQL AIVEN
@@ -33,20 +43,26 @@ app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
 
-# Flask-MySQLdb forwards MYSQL_CUSTOM_OPTIONS to the database driver.  This
-# enables TLS; MYSQL_SSL by itself is not read by the extension.
-ssl_options = {
-    "check_hostname": False,
-    "cert_reqs": ssl.CERT_NONE,
-}
-if ssl_ca := os.getenv("MYSQL_SSL_CA"):
-    # Download Aiven's CA certificate and set this value for certificate
-    # verification in production, e.g. MYSQL_SSL_CA=./ca.pem.
-    ssl_options = {"ca": ssl_ca}
+# Flask-MySQLdb forwards this verified TLS context to the database driver.
+ssl_ca = os.getenv("MYSQL_SSL_CA")
+ssl_options = ssl.create_default_context(cafile=ssl_ca or None)
+if os.getenv("MYSQL_SSL", "required").lower() not in {"required", "true", "1"}:
+    ssl_options = None
 
 app.config["MYSQL_CUSTOM_OPTIONS"] = {
     "ssl": ssl_options,
 }
+
+if app.config["ENVIRONMENT"] == "production":
+    required_settings = (
+        "MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DB",
+        "APP_USERNAME", "APP_PASSWORD",
+    )
+    missing = [name for name in required_settings if not os.getenv(name)]
+    if missing:
+        raise RuntimeError("Faltan variables de producción: " + ", ".join(missing))
+    if os.getenv("MYSQL_SSL", "required").lower() not in {"required", "true", "1"}:
+        raise RuntimeError("MYSQL_SSL debe ser required en producción")
 
 mysql = MySQL(app)
 # =========================
@@ -54,9 +70,9 @@ mysql = MySQL(app)
 # =========================
 
 def create_tables():
-    try:
-        cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()
 
+    try:
         cur.execute("""
         CREATE TABLE IF NOT EXISTS contacts1(
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,15 +91,12 @@ def create_tables():
         """)
 
         mysql.connection.commit()
+    finally:
         cur.close()
 
-        print("Tablas verificadas/creadas")
-
-    except Exception as e:
-        print("Error creando tablas:", e)
-
-# ejecutar al iniciar
-with app.app_context():
+@app.cli.command("init-db")
+def init_db_command():
+    """Crear las tablas iniciales manualmente durante el despliegue."""
     create_tables()
 # ==============================
 # LOGIN
@@ -97,7 +110,12 @@ def login():
         user = request.form.get('user', '').strip()
         password = request.form.get('password', '')
 
-        if user == "camilo" and password == "123456":
+        expected_user = os.getenv("APP_USERNAME", "camilo")
+        expected_password = os.getenv("APP_PASSWORD")
+        if expected_password is None and app.config["ENVIRONMENT"] != "production":
+            expected_password = "123456"
+
+        if expected_password and user == expected_user and password == expected_password:
 
             session['usuario'] = user
             return redirect(url_for('index'))
@@ -451,8 +469,4 @@ def end_call(id):
 # ==============================
 
 if __name__ == '__main__':
-
-    with app.app_context():
-        create_tables()
-
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv("PORT", "5000")), debug=False)
