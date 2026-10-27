@@ -45,7 +45,11 @@ app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
 
 # Flask-MySQLdb forwards this verified TLS context to the database driver.
 ssl_ca = os.getenv("MYSQL_SSL_CA")
-ssl_options = ssl.create_default_context(cafile=ssl_ca or None)
+if not ssl_ca:
+    # Use the Aiven CA bundled with the app when no provider override is set.
+    bundled_ca = os.path.join(os.path.dirname(__file__), "ca", "aiven-ca.pem")
+    ssl_ca = bundled_ca if os.path.isfile(bundled_ca) else None
+ssl_options = ssl.create_default_context(cafile=ssl_ca)
 if os.getenv("MYSQL_SSL", "required").lower() not in {"required", "true", "1"}:
     ssl_options = None
 
